@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BiteDash | Premium Food Delivery Marketplace</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Baseline Layout Core Reset Definitions */
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, sans-serif; }
+        
+        :root {
+            --bg-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --text-color: #2f3542;
+            --text-muted: #747d8c;
+            --border-color: #e4e7eb;
+            --search-bg: #f1f2f6;
+            --shadow: rgba(0,0,0,0.06);
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #1e2229;
+            --card-bg: #2d3436;
+            --text-color: #f1f2f6;
+            --text-muted: #a4b0be;
+            --border-color: #4a4a4a;
+            --search-bg: #2f3542;
+            --shadow: rgba(0,0,0,0.3);
+        }
+
+        body { background-color: var(--bg-color); color: var(--text-color); line-height: 1.5; padding-bottom: 60px; transition: background 0.3s, color 0.3s; }
+        .app-container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        .id-hidden { display: none !important; }
+
+        /* Navigation Bar Structural Rules */
+        #navigation-bar { background: var(--card-bg); box-shadow: 0 2px 8px var(--shadow); padding: 15px 0; position: sticky; top: 0; z-index: 100; }
+        .nav-wrapper { display: flex; justify-content: space-between; align-items: center; }
+        .brand-logo { display: flex; align-items: center; gap: 8px; font-size: 24px; font-weight: 800; color: var(--text-color); cursor: pointer; text-decoration: none; }
+        .brand-logo span { color: #ff4757; }
+        .search-container { position: relative; width: 40%; max-width: 500px; }
+        .search-container input { width: 100%; padding: 10px 15px 10px 40px; border: 1px solid var(--border-color); border-radius: 30px; font-size: 14px; background: var(--search-bg); color: var(--text-color); transition: all 0.3s; }
+        .search-container input:focus { outline: none; border-color: #ff4757; background: var(--card-bg); box-shadow: 0 0 0 3px rgba(255, 71, 87, 0.1); }
+        .search-container i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #a4b0be; }
+        
+        .nav-actions { display: flex; align-items: center; gap: 15px; }
+        .theme-toggle-btn { background: none; border: 1px solid var(--border-color); color: var(--text-color); padding: 10px; border-radius: 50%; cursor: pointer; font-size: 16px; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; }
+        .cart-trigger-btn { background: #ff4757; color: #fff; border: none; padding: 10px 18px; border-radius: 20px; font-weight: 600; display: flex; align-items: center; gap: 8px; cursor: pointer; position: relative; }
+        #cart-count-badge { background: #2f3542; color: #fff; font-size: 11px; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+
+        /* Promotional Banner */
+        #promotional-banner-container { margin: 30px 0; }
+        .promo-card { background: linear-gradient(135deg, #ffeaa7 0%, #ff7675 100%); border-radius: 16px; padding: 40px; display: flex; justify-content: space-between; align-items: center; min-height: 200px; position: relative; overflow: hidden; box-shadow: 0 10px 20px rgba(255, 118, 117, 0.15); }
+        .promo-content { max-width: 60%; color: #2f3542; z-index: 2; }
+        .promo-content .tag { background: rgba(255,255,255,0.8); padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; text-transform: uppercase; color: #ff7675; }
+        .promo-content h2 { font-size: 32px; font-weight: 800; margin: 12px 0 6px 0; }
+        .promo-content p { font-size: 15px; margin-bottom: 20px; color: #57606f; }
+        .promo-btn { background: #2f3542; color: #fff; border: none; padding: 12px 24px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .promo-btn:hover { background: #1e2229; }
+        .promo-badge-graphic { position: absolute; right: -20px; top: -20px; background: rgba(255,255,255,0.15); font-size: 130px; font-weight: 900; color: rgba(255,255,255,0.25); transform: rotate(-15deg); user-select: none; z-index: 1; }
+
+        /* Section Components UI Modules */
+        .section-title { font-size: 22px; font-weight: 700; margin-bottom: 20px; color: var(--text-color); }
+        .listings-header-row { display: flex; justify-content: space-between; align-items: center; margin-top: 40px; margin-bottom: 20px; }
+        .sort-wrapper { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; color: var(--text-muted); }
+        .sort-wrapper select { padding: 8px 16px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--card-bg); font-weight: 600; color: var(--text-color); outline: none; cursor: pointer; }
+
+        /* Structural Grid Component Bindings */
+        #category-container { display: flex; gap: 12px; overflow-x: auto; padding: 5px 0; scrollbar-width: none; margin-bottom: 20px; }
+        #category-container::-webkit-scrollbar { display: none; }
+        .category-card { background: var(--card-bg); border: 1px solid var(--border-color); color: var(--text-color); padding: 10px 20px; border-radius: 25px; cursor: pointer; font-weight: 600; white-space: nowrap; transition: all 0.2s; }
+        .category-card.active { background: #ff4757; color: #fff; border-color: #ff4757; box-shadow: 0 4px 10px rgba(255, 71, 87, 0.2); }
+        
+        #restaurant-grid, #menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px; margin-top: 10px; }
+        
+        /* Card Layout Component Interfaces */
+        .restaurant-card, .menu-card { background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border-color); overflow: hidden; box-shadow: 0 4px 6px var(--shadow); cursor: pointer; transition: transform 0.25s, box-shadow 0.25s; }
+        .restaurant-card:hover, .menu-card:hover { transform: translateY(-4px); box-shadow: 0 12px 20px var(--shadow); }
+        .card-img-wrapper { height: 180px; width: 100%; position: relative; background: #dfe4ea; }
+        .card-img-wrapper img { width: 100%; height: 100%; object-fit: cover; }
+        .delivery-badge { position: absolute; bottom: 12px; right: 12px; background: rgba(47, 53, 66, 0.9); color: #fff; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: bold; }
+        .card-details { padding: 16px; }
+        .card-row-one { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .card-row-one h3 { font-size: 18px; font-weight: 700; color: var(--text-color); }
+        .rating-badge { background: #ffa502; color: #fff; padding: 2px 8px; border-radius: 6px; font-size: 12px; font-weight: 700; display: flex; align-items: center; gap: 4px; }
+        .card-row-two { display: flex; justify-content: space-between; color: var(--text-muted); font-size: 14px; }
+
+        /* Dynamic Product Menu Overlay Settings */
+        .menu-back-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 25px; }
+        #back-to-restaurants-btn { background: none; border: none; color: var(--text-muted); font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; font-size: 15px; }
+        #back-to-restaurants-btn:hover { color: #ff4757; }
+        .add-to-cart-btn { background: #ff4757; color: #fff; border: none; padding: 8px 16px; border-radius: 6px; font-weight: 700; cursor: pointer; transition: 0.2s; }
+        .add-to-cart-btn:hover { background: #e0404e; }
+
+        /* Cart Context Drawers Layout */
+        #cart-sidebar { position: fixed; right: -400px; top: 0; width: 400px; height: 100%; background: var(--card-bg); box-shadow: -5px 0 25px rgba(0,0,0,0.1); z-index: 1000; display: flex; flex-direction: column; transition: right 0.3s ease-in-out; border-left: 1px solid var(--border-color); }
+        #cart-sidebar.active { right: 0; }
+        #cart-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 999; display: none; }
+        #cart-overlay.active { display: block; }
+        .cart-header { padding: 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+        #close-cart-btn { background: none; border: none; font-size: 20px; cursor: pointer; color: var(--text-muted); }
+        #cart-items-container { flex: 1; overflow-y: auto; padding: 20px; }
+        .cart-item { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border-color); }
+        .cart-item img { width: 60px; height: 60px; border-radius: 8px; object-fit: cover; }
+        .cart-item-info { flex: 1; }
+        .cart-item-info h5 { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+        .cart-item-price { color: #ff4757; font-weight: 700; font-size: 14px; }
+        .qty-controls { display: flex; align-items: center; gap: 8px; }
+        .qty-btn { width: 24px; height: 24px; border-radius: 50%; border: 1px solid var(--border-color); background: var(--bg-color); color: var(--text-color); cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+        .cart-footer { padding: 20px; border-top: 1px solid var(--border-color); background: var(--bg-color); }
+        .bill-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px; color: var(--text-muted); }
+        .checkout-btn { width: 100%; background: #ff4757; color: #fff; border: none; padding: 14px; border-radius: 8px; font-size: 16px; font-weight: 700; margin-top: 15px; cursor: pointer; }
+
+        /* Checkout Modal */
+        .modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.9); background: var(--card-bg); border-radius: 12px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); z-index: 1001; text-align: center; max-width: 400px; width: 90%; opacity: 0; visibility: hidden; transition: all 0.3s; border: 1px solid var(--border-color); }
+        .modal.active { opacity: 1; visibility: visible; transform: translate(-50%, -50%) scale(1); }
+        .modal i { font-size: 50px; color: #2ed573; margin-bottom: 15px; }
+
+        /* Responsive Breakpoint rules */
+        @media (max-width: 768px) {
+            .nav-wrapper { flex-direction: column; gap: 12px; }
+            .search-container { width: 100%; }
+            #cart-sidebar { width: 100%; right: -100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav id="navigation-bar">
+        <div class="app-container nav-wrapper">
+            <a href="#" class="brand-logo" onclick="location.reload()">
+                <i class="fa-solid fa-utensils"></i> Bite<span>Dash</span>
+            </a>
+            
+            <div class="search-container">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="global-search" placeholder="Search restaurants or cuisines...">
+            </div>
+
+            <div class="nav-actions">
+                <button class="theme-toggle-btn" id="theme-toggle" aria-label="Toggle Theme">
+                    <i class="fa-solid fa-moon"></i>
+                </button>
+                <button class="cart-trigger-btn" id="cart-toggle">
+                    <i class="fa-solid fa-basket-shopping"></i>
+                    <span id="cart-count-badge">0</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="app-container">
+        <div id="promotional-banner-container"></div>
+
+        <section id="listings-anchor">
+            <h2 class="section-title">In the mood for...?</h2>
+            <div id="category-container"></div>
+            
+            <div class="listings-header-row">
+                <h2 class="section-title" style="margin: 0;">Featured Restaurants</h2>
+                <div class="sort-wrapper">
+                    <i class="fa-solid fa-arrow-down-short-wide"></i> Sort By: 
+                    <select id="sort-select">
+                        <option value="default">Default</option>
+                        <option value="rating">Rating</option>
+                        <option value="deliveryTime">Delivery Time</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="restaurant-grid"></div>
+        </section>
+
+        <section id="menu-section" class="id-hidden">
+            <div class="menu-back-bar">
+                <button id="back-to-restaurants-btn"><i class="fa-solid fa-arrow-left"></i> Back to Restaurants</button>
+            </div>
+            <h2 id="menu-restaurant-name" class="section-title"></h2>
+            <div id="menu-grid"></div>
+        </section>
+    </main>
+
+    <div id="cart-overlay"></div>
+    <aside id="cart-sidebar">
+        <div class="cart-header">
+            <h3>Your Order</h3>
+            <button id="close-cart-btn"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+
+        <div id="cart-items-container">
+            <div id="empty-cart-msg" style="text-align: center; color: #a4b0be; margin-top: 40px;">
+                <i class="fa-solid fa-bag-shopping" style="font-size: 48px; margin-bottom: 15px; color: #dfe4ea;"></i>
+                <p>Your cart is empty. Add items to begin!</p>
+            </div>
+        </div>
+
+        <div class="cart-footer">
+            <div class="bill-row">
+                <span>Subtotal</span>
+                <span id="bill-subtotal">₹0.00</span>
+            </div>
+            <div class="bill-row">
+                <span>Delivery Charge</span>
+                <span>₹40.00</span>
+            </div>
+            <div class="bill-row" style="font-weight: 700; color: var(--text-color); font-size: 16px; margin-top: 10px; border-top: 1px dashed #dfe4ea; padding-top: 10px;">
+                <span>Total</span>
+                <span id="bill-total">₹0.00</span>
+            </div>
+            <button class="checkout-btn" id="checkout-trigger">Proceed to Checkout</button>
+        </div>
+    </aside>
+
+    <div class="modal" id="checkout-modal">
+        <i class="fa-solid fa-circle-check"></i>
+        <h2>Order Placed Successfully!</h2>
+        <p style="margin: 10px 0 20px 0; color: var(--text-muted);">Thank you for ordering from BiteDash. Your meal is on its way!</p>
+        <button class="promo-btn" id="close-modal-btn">Awesome</button>
+    </div>
+
+    <script>
+    const RESTAURANTS_DATA = [
+        {
+            id: "res-1",
+            name: "Pizza Palace",
+            rating: 4.8,
+            deliveryTime: "20-30 min",
+            deliveryMin: 20, 
+            category: "Pizza",
+            priceIndicator: "₹₹",
+            image: "https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=500&q=80",
+            menu: [
+                { id: "m1", name: "Margherita Pizza", price: 299, rating: 4.6, image: "https://images.unsplash.com/photo-1574071318508-1cdbab80d002?auto=format&fit=crop&w=300&q=80" },
+                { id: "m2", name: "Pepperoni Feast", price: 449, rating: 4.8, image: "https://images.unsplash.com/photo-1628840042765-356cda07504e?auto=format&fit=crop&w=300&q=80" }
+            ]
+        },
+        {
+            id: "res-2",
+            name: "Burger Bonanza",
+            rating: 4.5,
+            deliveryTime: "15-25 min",
+            deliveryMin: 15,
+            category: "Burgers",
+            priceIndicator: "₹",
+            image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=500&q=80",
+            menu: [
+                { id: "m4", name: "Classic Cheeseburger", price: 149, rating: 4.4, image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=300&q=80" }
+            ]
+        },
+        {
+            id: "res-3",
+            name: "Sushi Sakura",
+            rating: 4.9,
+            deliveryTime: "30-40 min",
+            deliveryMin: 30,
+            category: "Sushi",
+            priceIndicator: "₹₹₹",
+            image: "https://images.unsplash.com/photo-1579871494447-9811cf80d66c?auto=format&fit=crop&w=500&q=80",
+            menu: [
+                { id: "m7", name: "Salmon Sashimi Platters", price: 799, rating: 4.9, image: "https://images.unsplash.com/photo-1579871494447-9811cf80d66c?auto=format&fit=crop&w=300&q=80" }
+            ]
+        },
+        {
+            id: "res-4",
+            name: "Sweet Dreams Patisserie",
+            rating: 4.2,
+            deliveryTime: "10-20 min",
+            deliveryMin: 10,
+            category: "Desserts",
+            priceIndicator: "₹",
+            image: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=500&q=80",
+            menu: [
+                { id: "m9", name: "Chocolate Lava Cake", price: 120, rating: 4.3, image: "https://images.unsplash.com/photo-1606313564200-e75d5e30476c?auto=format&fit=crop&w=300&q=80" }
+            ]
+        },
+        {
+            id: "res-5",
+            name: "Wok & Roll Bistro",
+            rating: 4.6,
+            deliveryTime: "25-35 min",
+            deliveryMin: 25,
+            category: "Asian",
+            priceIndicator: "₹₹",
+            image: "https://images.unsplash.com/photo-1525755662778-989d0524087e?auto=format&fit=crop&w=500&q=80",
+            menu: [
+                { id: "m11", name: "Kung Pao Chicken", price: 320, rating: 4.5, image: "https://images.unsplash.com/photo-1525755662778-989d0524087e?auto=format&fit=crop&w=300&q=80" }
+            ]
+        }
+    ];
+
+    const CATEGORIES = ["All", "Pizza", "Burgers", "Sushi", "Desserts", "Asian"];
+
+    let activeCategory = "All";
+    let searchQuery = "";
+    let sortBy = "default";
+    let selectedRestaurant = null;
+
+    // DATA STRUCTURE 1: Hash Map (JavaScript Object Key-Value Storage) for Cart items management
+    const cart = JSON.parse(localStorage.getItem("bitedash_persisted_cart")) || {};
+
+    // DOM References
+    const promoBannerContainer = document.getElementById("promotional-banner-container");
+    const listingsSection = document.getElementById("listings-anchor");
+    const categoryContainer = document.getElementById("category-container");
+    const restaurantGrid = document.getElementById("restaurant-grid");
+    const globalSearch = document.getElementById("global-search");
+    const sortSelect = document.getElementById("sort-select");
+    const menuSection = document.getElementById("menu-section");
+    const menuGrid = document.getElementById("menu-grid");
+    const menuResName = document.getElementById("menu-restaurant-name");
+    const backBtn = document.getElementById("back-to-restaurants-btn");
+    const cartSidebar = document.getElementById("cart-sidebar");
+    const cartOverlay = document.getElementById("cart-overlay");
+    const cartToggle = document.getElementById("cart-toggle");
+    const closeCartBtn = document.getElementById("close-cart-btn");
+    const cartItemsContainer = document.getElementById("cart-items-container");
+    const emptyCartMsg = document.getElementById("empty-cart-msg");
+    const cartBadge = document.getElementById("cart-count-badge");
+    const billSubtotal = document.getElementById("bill-subtotal");
+    const billTotal = document.getElementById("bill-total");
+    const themeToggle = document.getElementById("theme-toggle");
+    const checkoutTrigger = document.getElementById("checkout-trigger");
+    const checkoutModal = document.getElementById("checkout-modal");
+    const closeModalBtn = document.getElementById("close-modal-btn");
+
+    window.addEventListener("DOMContentLoaded", () => {
+        renderLandingPageUI(); 
+        renderCategories();
+        filterAndRenderRestaurants();
+        setupEventListeners();
+        updateCartDOM(); 
+        
+        // Dark mode setup check
+        if (localStorage.getItem("theme") === "dark") {
+            document.documentElement.setAttribute("data-theme", "dark");
+            themeToggle.innerHTML = `<i class="fa-solid fa-sun"></i>`;
+        }
+    });
+
+    function renderLandingPageUI() {
+        if (promoBannerContainer) {
+            promoBannerContainer.innerHTML = `
+                <div class="promo-card">
+                    <div class="promo-content">
+                        <span class="tag">Special Offer</span>
+                        <h2>Hungry? Grab up to 50% OFF on your first order!</h2>
+                        <p>Order from your local favorites with lightning-fast delivery.</p>
+                        <button class="promo-btn" onclick="document.getElementById('listings-anchor').scrollIntoView({behavior:'smooth'})">Order Now</button>
+                    </div>
+                    <div class="promo-badge-graphic">50% OFF</div>
+                </div>
+            `;
+        }
+    }
+
+    function setupEventListeners() {
+        if (globalSearch) {
+            globalSearch.addEventListener("input", (e) => {
+                searchQuery = e.target.value.toLowerCase();
+                if (selectedRestaurant) {
+                    menuSection.classList.add("id-hidden");
+                    listingsSection.classList.remove("id-hidden");
+                    selectedRestaurant = null;
+                }
+                filterAndRenderRestaurants();
+            });
+        }
+        if (sortSelect) {
+            sortSelect.addEventListener("change", (e) => {
+                sortBy = e.target.value;
+                filterAndRenderRestaurants();
+            });
+        }
+        if (backBtn) {
+            backBtn.addEventListener("click", () => {
+                menuSection.classList.add("id-hidden");
+                listingsSection.classList.remove("id-hidden");
+                selectedRestaurant = null;
+            });
+        }
+        if (cartToggle) cartToggle.addEventListener("click", () => toggleCart(true));
+        if (closeCartBtn) closeCartBtn.addEventListener("click", () => toggleCart(false));
+        if (cartOverlay) cartOverlay.addEventListener("click", () => {
+            toggleCart(false);
+            checkoutModal.classList.remove("active");
+        });
+
+        // Theme Toggle Action
+        themeToggle.addEventListener("click", () => {
+            const currentTheme = document.documentElement.getAttribute("data-theme");
+            if (currentTheme === "dark") {
+                document.documentElement.removeAttribute("data-theme");
+                localStorage.setItem("theme", "light");
+                themeToggle.innerHTML = `<i class="fa-solid fa-moon"></i>`;
+            } else {
+                document.documentElement.setAttribute("data-theme", "dark");
+                localStorage.setItem("theme", "dark");
+                themeToggle.innerHTML = `<i class="fa-solid fa-sun"></i>`;
+            }
+        });
+
+        // Checkout Action Flow
+        checkoutTrigger.addEventListener("click", () => {
+            if (Object.keys(cart).length === 0) return;
+            toggleCart(false);
+            cartOverlay.classList.add("active");
+            checkoutModal.classList.add("active");
+            
+            // Clear cart data structures
+            for (let key in cart) delete cart[key];
+            localStorage.removeItem("bitedash_persisted_cart");
+            updateCartDOM();
+        });
+
+        closeModalBtn.addEventListener("click", () => {
+            checkoutModal.classList.remove("active");
+            cartOverlay.classList.remove("active");
+        });
+    }
+
+    function toggleCart(isOpen) {
+        if (isOpen) { cartSidebar.classList.add("active"); cartOverlay.classList.add("active"); }
+        else { cartSidebar.classList.remove("active"); cartOverlay.classList.remove("active"); }
+    }
+
+    function renderCategories() {
+        if (!categoryContainer) return;
+        categoryContainer.innerHTML = "";
+        CATEGORIES.forEach(cat => {
+            const card = document.createElement("div");
+            card.className = `category-card ${cat === activeCategory ? 'active' : ''}`;
+            card.innerHTML = `<span>${cat}</span>`;
+            card.addEventListener("click", () => {
+                activeCategory = cat;
+                renderCategories();
+                if (selectedRestaurant) {
+                    menuSection.classList.add("id-hidden");
+                    listingsSection.classList.remove("id-hidden");
+                    selectedRestaurant = null;
+                }
+                filterAndRenderRestaurants();
+            });
+            categoryContainer.appendChild(card);
+        });
+    }
+
+    // DATA STRUCTURE 2: Array-Based Filtering & Sorting Algorithms 
+    function filterAndRenderRestaurants() {
+        let filtered = RESTAURANTS_DATA.filter(res => {
+            return (activeCategory === "All" || res.category === activeCategory) &&
+                   (res.name.toLowerCase().includes(searchQuery) || res.category.toLowerCase().includes(searchQuery));
+        });
+
+        if (sortBy === "rating") filtered.sort((a, b) => b.rating - a.rating);
+        else if (sortBy === "deliveryTime") filtered.sort((a, b) => a.deliveryMin - b.deliveryMin);
+
+        if (!restaurantGrid) return;
+        restaurantGrid.innerHTML = "";
+        
+        if (filtered.length === 0) {
+            restaurantGrid.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: var(--text-muted);">No restaurants found.</p>`;
+            return;
+        }
+
+        filtered.forEach(res => {
+            const card = document.createElement("div");
+            card.className = "restaurant-card";
+            card.innerHTML = `
+                <div class="card-img-wrapper">
+                    <img src="${res.image}" alt="${res.name}">
+                    <div class="delivery-badge">${res.deliveryTime}</div>
+                </div>
+                <div class="card-details">
+                    <div class="card-row-one">
+                        <h3>${res.name}</h3>
+                        <span class="rating-badge"><i class="fa-solid fa-star"></i> ${res.rating}</span>
+                    </div>
+                    <div class="card-row-two">
+                        <span>${res.category}</span>
+                        <span style="font-weight: 600; color:#ff4757;">${res.priceIndicator}</span>
+                    </div>
+                </div>
+            `;
+            card.addEventListener("click", () => openRestaurantMenu(res));
+            restaurantGrid.appendChild(card);
+        });
+    }
+
+    function openRestaurantMenu(restaurant) {
+        selectedRestaurant = restaurant;
+        listingsSection.classList.add("id-hidden");
+        menuSection.classList.remove("id-hidden");
+        menuResName.innerText = `${restaurant.name} Menu`;
+        
+        menuGrid.innerHTML = "";
+        restaurant.menu.forEach(item => {
+            const card = document.createElement("div");
+            card.className = "menu-card";
+            const cleanName = item.name.replace(/'/g, "\\'");
+            card.innerHTML = `
+                <div class="card-img-wrapper" style="height: 160px;">
+                    <img src="${item.image}" alt="${item.name}">
+                </div>
+                <div style="padding: 15px;">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 5px;">
+                        <h4 style="font-size: 16px; font-weight: 700;">${item.name}</h4>
+                        <span class="rating-badge" style="font-size: 11px; padding: 1px 6px;"><i class="fa-solid fa-star"></i> ${item.rating}</span>
+                    </div>
+                    <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 15px;">Fresh premium ingredients made to order.</p>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-weight: 700; color: #ff4757; font-size: 18px;">₹${item.price}</span>
+                        <button class="add-to-cart-btn" onclick="addToCart('${item.id}', '${cleanName}', ${item.price}, '${item.image}')">Add to Cart</button>
+                    </div>
+                </div>
+            `;
+            menuGrid.appendChild(card);
+        });
+    }
+
+    window.addToCart = function(itemId, name, price, image) {
+        if (cart[itemId]) cart[itemId].quantity += 1;
+        else cart[itemId] = { id: itemId, name: name, price: price, image: image, quantity: 1 };
+        localStorage.setItem("bitedash_persisted_cart", JSON.stringify(cart));
+        updateCartDOM();
+        toggleCart(true);
+    };
+
+    window.incrementQuantity = function(itemId) {
+        if (cart[itemId]) { cart[itemId].quantity += 1; localStorage.setItem("bitedash_persisted_cart", JSON.stringify(cart)); updateCartDOM(); }
+    };
+
+    window.decrementQuantity = function(itemId) {
+        if (!cart[itemId]) return;
+        cart[itemId].quantity -= 1;
+        if (cart[itemId].quantity <= 0) delete cart[itemId];
+        localStorage.setItem("bitedash_persisted_cart", JSON.stringify(cart));
+        updateCartDOM();
+    };
+
+    function updateCartDOM() {
+        const keys = Object.keys(cart);
+        document.querySelectorAll('.cart-item').forEach(el => el.remove());
+
+        if (keys.length === 0) {
+            emptyCartMsg.style.display = "block";
+            cartBadge.innerText = "0";
+            billSubtotal.innerText = "₹0.00";
+            billTotal.innerText = "₹0.00";
+            return;
+        }
+
+        emptyCartMsg.style.display = "none";
+        let subtotalSum = 0, totalItems = 0;
+
+        keys.forEach(key => {
+            const item = cart[key];
+            subtotalSum += item.price * item.quantity;
+            totalItems += item.quantity;
+
+            const el = document.createElement("div");
+            el.className = "cart-item";
+            el.innerHTML = `
+                <img src="${item.image}">
+                <div class="cart-item-info">
+                    <h5>${item.name}</h5>
+                    <span class="cart-item-price">₹${item.price * item.quantity}</span>
+                </div>
+                <div class="qty-controls">
+                    <button class="qty-btn" onclick="decrementQuantity('${item.id}')">-</button>
+                    <span>${item.quantity}</span>
+                    <button class="qty-btn" onclick="incrementQuantity('${item.id}')">+</button>
+                </div>
+            `;
+            cartItemsContainer.appendChild(el);
+        });
+
+        cartBadge.innerText = totalItems;
+        billSubtotal.innerText = `₹${subtotalSum}.00`;
+        billTotal.innerText = `₹${subtotalSum + 40}.00`;
+    }
+    </script>
+</body>
+</html>
